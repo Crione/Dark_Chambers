@@ -8,7 +8,7 @@ namespace Dark_Chambers
     {
         //used variables
         public string Name { get; set; }
-        public int LVL = 5;
+        public int LVL = 1;
         public int MaxHP = 20;
         public int HP = 20;
         public int MaxXP = 100;

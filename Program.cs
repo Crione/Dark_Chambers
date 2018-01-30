@@ -30,38 +30,12 @@ namespace Dark_Chambers
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        static void Read(bool attack = false, bool yesno = false, string Query = "")
+        static void Read(string Query = "")
         {
-            bool Break = false;
-            if (attack == true)
-            {
-                Write("What do you want to do?");
-                while(Break == false)
-                {
-                    Write("(Enter 'attack' or 'flee')", ConsoleColor.DarkGray, false);
-                    Invoer = Console.ReadLine();
-                    Console.WriteLine();
-                    switch (Invoer)
-                    {
-                        case "attack":
-                        case "a":
-                            Attack(e);
-                            Break = true;
-                            break;
-                        case "flee":
-                        case "f":
-                            Flee();
-                            Break = true;
-                            break;
-                        default:
-                            Break = false;
-                            break;
-                    }
-                }
-            }
-            else if(yesno == true)
+            if(Query == "")
             {
                 Write(Query);
+                bool Break = false;
                 while (Break == false)
                 {
                     Write("(Enter 'yes' or 'no')", ConsoleColor.DarkGray, false);
@@ -138,12 +112,17 @@ namespace Dark_Chambers
             Percentage = r.Next(0, 101);
             if(Percentage <= 80)
             {
-                if(Percentage <= 50)
+                int eLVL = r.Next((p.LVL - 3), (p.LVL + 2));
+                if(eLVL <= 0)
                 {
-                    e = new Rat(r.Next((p.LVL - 3),(p.LVL + 2)));
+                    eLVL = 1;
+                }
+                if (Percentage <= 50)
+                {
+                    e = new Rat(eLVL);
                 }else if(Percentage > 50 && Percentage <= 100)
                 {
-                    e = new Spider(r.Next((p.LVL - 3), (p.LVL + 2)));
+                    e = new Spider(eLVL);
                 }
                 Battle(e);
             }
@@ -156,11 +135,34 @@ namespace Dark_Chambers
 
         static void Battle(Enemy e)
         {
-            Read(false, true, "A " + e.Type + " attacks! Fight back?");
+            Read("A " + e.Type + " attacks! Fight back?");
             switch (Invoer)
             {
                 case "yes":
-                    Read(true);
+                    Write("What do you want to do?");
+                    bool Break = false;
+                    while (Break == false)
+                    {
+                        Write("(Enter 'attack' or 'flee')", ConsoleColor.DarkGray, false);
+                        Invoer = Console.ReadLine();
+                        Console.WriteLine();
+                        switch (Invoer)
+                        {
+                            case "attack":
+                            case "a":
+                                Attack(e);
+                                Break = true;
+                                break;
+                            case "flee":
+                            case "f":
+                                Flee();
+                                Break = true;
+                                break;
+                            default:
+                                Break = false;
+                                break;
+                        }
+                    }
                     break;
                 case "no":
                     Flee();
