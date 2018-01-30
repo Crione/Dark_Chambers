@@ -67,21 +67,18 @@ namespace Dark_Chambers
             }
             else
             {
-                p.name = Console.ReadLine();
+                Invoer = Console.ReadLine();
                 Console.WriteLine();
             }
         }
 
-        static void InvoerCheck()
-        {
-           
-        }
-
-
         //Game variables
-        static string Invoer = "";
         static Player p = new Player();
         static bool Game = true;
+
+        static string Invoer = "";
+        static int Percentage { get; set; }
+        static Random r = new Random();
 
 
         //Game
@@ -103,7 +100,16 @@ namespace Dark_Chambers
 
         static void Event()
         {
-
+            Percentage = r.Next(0, 101);
+            Console.WriteLine(Percentage);
+            if(Percentage <= 80)
+            {
+                Console.WriteLine("Battle");
+            }else if(Percentage > 80 && Percentage <= 100)
+            {
+                Console.WriteLine("Chest");
+            }
+            Console.ReadLine();
         }
     }
 }
