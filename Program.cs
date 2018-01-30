@@ -6,7 +6,7 @@ namespace Dark_Chambers
     {
 
         //Function methods
-        static void Write(string Invoer, ConsoleColor Color = ConsoleColor.Gray, bool Sleep = true ,bool WriteLine = true)
+        static void Write(string Invoer, ConsoleColor Color = ConsoleColor.White, bool Sleep = true ,bool WriteLine = true)
         {
             Console.ForegroundColor = Color;
             if (Sleep == true)
@@ -27,16 +27,42 @@ namespace Dark_Chambers
             {
                 Console.WriteLine();
             }
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
-        static void Read(string Query = "", string Fallback = "")
+        static void Read(bool attack = false, bool yesno = false, string Query = "")
         {
-            if(Query != "")
+            bool Break = false;
+            if (attack == true)
             {
-                bool c = false;
-                Write(Query, ConsoleColor.White);
-                while (c == false)
+                Write("What do you want to do?");
+                while(Break == false)
+                {
+                    Write("(Enter 'attack' or 'flee')", ConsoleColor.DarkGray, false);
+                    Invoer = Console.ReadLine();
+                    Console.WriteLine();
+                    switch (Invoer)
+                    {
+                        case "attack":
+                        case "a":
+                            Attack(e);
+                            Break = true;
+                            break;
+                        case "flee":
+                        case "f":
+                            Flee();
+                            Break = true;
+                            break;
+                        default:
+                            Break = false;
+                            break;
+                    }
+                }
+            }
+            else if(yesno == true)
+            {
+                Write(Query);
+                while (Break == false)
                 {
                     Write("(Enter 'yes' or 'no')", ConsoleColor.DarkGray, false);
                     Invoer = Console.ReadLine();
@@ -45,22 +71,16 @@ namespace Dark_Chambers
                     {
                         case "yes":
                         case "y":
-                            c = true;
+                            Invoer = "yes";
+                            Break = true;
                             break;
                         case "no":
                         case "n":
-                            if (Fallback == "")
-                            {
-                                Write(Query, ConsoleColor.White);
-                            }
-                            else
-                            {
-                                Write(Fallback, ConsoleColor.White);
-                            }
-                            c = false;
+                            Invoer = "no";
+                            Break = true;
                             break;
                         default:
-                            c = false;
+                            Break = false;
                             break;
                     }
                 }
@@ -69,6 +89,15 @@ namespace Dark_Chambers
             {
                 Invoer = Console.ReadLine();
                 Console.WriteLine();
+            }
+        }
+
+        static void CheckHP()
+        {
+            Write("[HP " + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed);
+            if(p.HP <= 0)
+            {
+                Game = false;
             }
         }
 
@@ -101,16 +130,14 @@ namespace Dark_Chambers
             {
                 Event();
             }
+            Write("You died!");
         }
 
         static void Event()
         {
             Percentage = r.Next(0, 101);
-            Console.WriteLine(Percentage);
             if(Percentage <= 80)
             {
-                Percentage = r.Next(0, 101);
-                Console.WriteLine(Percentage);
                 if(Percentage <= 50)
                 {
                     e = new Rat(r.Next((p.LVL - 3),(p.LVL + 2)));
@@ -129,7 +156,36 @@ namespace Dark_Chambers
 
         static void Battle(Enemy e)
         {
-            Write("A " + e.Type + " attacks!");
+            Read(false, true, "A " + e.Type + " attacks! Fight back?");
+            switch (Invoer)
+            {
+                case "yes":
+                    Read(true);
+                    break;
+                case "no":
+                    Flee();
+                    break;
+            }
+        }
+
+        static void Attack(Enemy e)
+        {
+
+        }
+
+        static void Flee()
+        {
+            Percentage = r.Next(0, 101);
+            if (Percentage <= 80)
+            {
+                Write("You run in another direction.");
+            }
+            else if (Percentage > 80 && Percentage <= 100)
+            {
+                p.HP = p.HP - e.DMG;
+                Write("The " + e.Type + " attacks you for " + e.DMG + " damage.");
+                CheckHP();
+            }
         }
     }
 }

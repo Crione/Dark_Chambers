@@ -11,6 +11,7 @@ namespace Dark_Chambers
         public int LVL { get; set; }
         public int HP { get; set; }
         public int DMG { get; set; }
+        public int XP { get; set; }
 
         //unused variables
         public int DEF { get; set; }
@@ -23,8 +24,9 @@ namespace Dark_Chambers
         {
             Type = "Rat";
             LVL = l;
-            HP = (int)(2.3 * l);
-            DMG = (int)(1.2 * l);
+            HP = (int)Math.Ceiling(1.8 * l);
+            DMG = (int)Math.Ceiling(0.7 * l);
+            XP = (int)(2 * l);
 
             //unused
             DEF = 1;
@@ -37,8 +39,9 @@ namespace Dark_Chambers
         {
             Type = "Spider";
             LVL = l;
-            HP = (int)(1.3 * l);
-            DMG = (int)(2.2 * l);
+            HP = (int)Math.Ceiling(1.3 * l);
+            DMG = (int)Math.Ceiling(1.7 * l);
+            XP = (int)(2 * l);
 
             //unused
             DEF = 1;
