@@ -18,9 +18,11 @@ namespace Dark_Chambers
 
     class Fist : Weapon
     {
-        public string Type = "Fist";
-        public int DMG = 1;
-        public int CRIT = 50;
+        public Fist() { 
+            Type = "Fist";
+            DMG = 1;
+            CRIT = 50;
+        }
     }
 
     class Sword : Weapon

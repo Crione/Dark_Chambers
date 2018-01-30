@@ -11,7 +11,7 @@ namespace Dark_Chambers
         public int LVL = 1;
         public int MaxHP = 20;
         public int HP = 20;
-        public int MaxXP = 100;
+        public int MaxXP = 10;
         public int XP = 0;
 
         public Weapon WPN = new Fist();

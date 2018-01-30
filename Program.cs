@@ -32,7 +32,7 @@ namespace Dark_Chambers
 
         static void Read(string Query = "")
         {
-            if(Query == "")
+            if(Query != "")
             {
                 Write(Query);
                 bool Break = false;
@@ -68,10 +68,11 @@ namespace Dark_Chambers
 
         static void CheckHP()
         {
-            Write("[HP " + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed);
+            Write("[HP " + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
             if(p.HP <= 0)
             {
                 Game = false;
+                Active = false;
             }
         }
 
@@ -81,7 +82,8 @@ namespace Dark_Chambers
         static Player p = new Player();
         static bool Game = true;
 
-        static string Invoer = "";
+        static bool Active { get; set; }
+        static string Invoer { get; set; }
         static int Percentage { get; set; }
         static Random r = new Random();
 
@@ -117,6 +119,7 @@ namespace Dark_Chambers
                 {
                     eLVL = 1;
                 }
+                Percentage = r.Next(0, 101);
                 if (Percentage <= 50)
                 {
                     e = new Rat(eLVL);
@@ -139,28 +142,33 @@ namespace Dark_Chambers
             switch (Invoer)
             {
                 case "yes":
-                    Write("What do you want to do?");
-                    bool Break = false;
-                    while (Break == false)
+                    Active = true;
+                    while(Active == true)
                     {
-                        Write("(Enter 'attack' or 'flee')", ConsoleColor.DarkGray, false);
-                        Invoer = Console.ReadLine();
-                        Console.WriteLine();
-                        switch (Invoer)
+                        Write("What do you want to do?");
+                        bool Break = false;
+                        while (Break == false)
                         {
-                            case "attack":
-                            case "a":
-                                Attack(e);
-                                Break = true;
-                                break;
-                            case "flee":
-                            case "f":
-                                Flee();
-                                Break = true;
-                                break;
-                            default:
-                                Break = false;
-                                break;
+                            Write("(Enter 'attack' or 'flee')", ConsoleColor.DarkGray, false);
+                            Invoer = Console.ReadLine();
+                            Console.WriteLine();
+                            switch (Invoer)
+                            {
+                                case "attack":
+                                case "a":
+                                    Attack(e);
+                                    Break = true;
+                                    break;
+                                case "flee":
+                                case "f":
+                                    Flee();
+                                    Active = false;
+                                    Break = true;
+                                    break;
+                                default:
+                                    Break = false;
+                                    break;
+                            }
                         }
                     }
                     break;
@@ -172,7 +180,44 @@ namespace Dark_Chambers
 
         static void Attack(Enemy e)
         {
+            //player attacks
+            Percentage = r.Next(0, 101);
+            if(Percentage <= p.WPN.CRIT)
+            {
+                int Crit = (int)Math.Ceiling(p.WPN.DMG * 1.5);
+                Write("Critical hit!");
+                Write("You attack the " + e.Type + " for " + Crit + " damage.");
+                e.HP = e.HP - Crit;
+            }
+            else
+            {
+                Write("You attack the " + e.Type + " for " + p.WPN.DMG + " damage.");
+                e.HP = e.HP - p.WPN.DMG;
+            }
 
+            Write(e.Type, ConsoleColor.White, false, false);
+            Write("[" + e.HP + "/" + e.MaxHP + "]", ConsoleColor.DarkRed, false);
+            Console.WriteLine();
+            if(e.HP <= 0)
+            {
+                Write("The " + e.Type + " died!");
+
+                p.XP = p.XP + e.XP;
+                Write("You gained " + e.XP + " EXP points.");
+                if(p.XP >= p.MaxXP)
+                {
+                    LevelUp();
+                }
+                Write("[EXP " + p.XP + "/" + p.MaxXP + "]", ConsoleColor.DarkGray);
+                Active = false;
+                return;
+            }
+
+            //enemy attacks
+            Write("The " + e.Type + " attacks you for " + e.DMG + " damage.");
+            p.HP = p.HP - e.DMG;
+            CheckHP();
+            Console.WriteLine();
         }
 
         static void Flee()
@@ -184,10 +229,28 @@ namespace Dark_Chambers
             }
             else if (Percentage > 80 && Percentage <= 100)
             {
-                p.HP = p.HP - e.DMG;
-                Write("The " + e.Type + " attacks you for " + e.DMG + " damage.");
+                int Damage = (int)Math.Ceiling(e.DMG * 0.5);
+                p.HP = p.HP - Damage;
+                Write("The " + e.Type + " attacks you for " + Damage + " damage.");
                 CheckHP();
             }
+        }
+
+        static void LevelUp()
+        {
+            Console.WriteLine();
+            Write("You leveled up!");
+            p.LVL = p.LVL + 1;
+            Write("[LVL " + p.LVL + "]");
+
+            Console.WriteLine();
+            Write("HP increased by 4 points.");
+            p.MaxHP = p.MaxHP + 4;
+            p.HP = p.HP + 4;
+            Write("[HP " + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
+
+            p.XP = p.XP - p.MaxXP;
+            p.MaxXP = (int)Math.Ceiling(p.MaxXP * 1.5);
         }
     }
 }
