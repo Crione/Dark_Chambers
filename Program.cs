@@ -27,7 +27,7 @@ namespace Dark_Chambers
             {
                 Console.WriteLine();
             }
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         static void Read(string Query = "", string Fallback = "")
@@ -73,6 +73,8 @@ namespace Dark_Chambers
         }
 
         //Game variables
+
+        static Enemy e = new Enemy();
         static Player p = new Player();
         static bool Game = true;
 
@@ -89,9 +91,12 @@ namespace Dark_Chambers
 
         static void StartGame()
         {
+            /*
             Write("Please enter your name:", ConsoleColor.White);
             Read();
+            p.Name = Invoer;
             Read("Are you ready to enter the chambers?");
+            */
             while(Game == true)
             {
                 Event();
@@ -104,12 +109,27 @@ namespace Dark_Chambers
             Console.WriteLine(Percentage);
             if(Percentage <= 80)
             {
-                Console.WriteLine("Battle");
-            }else if(Percentage > 80 && Percentage <= 100)
+                Percentage = r.Next(0, 101);
+                Console.WriteLine(Percentage);
+                if(Percentage <= 50)
+                {
+                    e = new Rat(r.Next((p.LVL - 3),(p.LVL + 2)));
+                }else if(Percentage > 50 && Percentage <= 100)
+                {
+                    e = new Spider(r.Next((p.LVL - 3), (p.LVL + 2)));
+                }
+                Battle(e);
+            }
+            else if(Percentage > 80 && Percentage <= 100)
             {
                 Console.WriteLine("Chest");
             }
             Console.ReadLine();
+        }
+
+        static void Battle(Enemy e)
+        {
+            Write("A " + e.Type + " attacks!");
         }
     }
 }

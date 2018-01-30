@@ -7,9 +7,10 @@ namespace Dark_Chambers
     class Player
     {
         //used variables
-        public string name { get; set; }
-        public int MaxHP = 5;
-        public int HP = 5;
+        public string Name { get; set; }
+        public int LVL = 5;
+        public int MaxHP = 20;
+        public int HP = 20;
         public int MaxXP = 100;
         public int XP = 0;
 
