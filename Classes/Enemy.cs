@@ -6,52 +6,58 @@ namespace Dark_Chambers
 { 
     class Enemy
     {
-        protected Random r = new Random();
+        static Random r = new Random();
 
         //used variables
         public string Type { get; set; }
-        public int LVL { get; set; }
+        public int Level { get; set; }
         public int HP { get; set; }
         public int MaxHP { get; set; }
-        public int DMG { get; set; }
-        public int XP { get; set; }
+        public int Damage { get; set; }
+        public int EXP { get; set; }
 
         //unused variables
-        public int DEF { get; set; }
+        public int Defence { get; set; }
         public int Coins { get; set; }
-    }
 
-    class Rat : Enemy
-    {
-        public Rat(int l)
+        public Enemy(string t, double h, double d, int l)
         {
-            //values
-            double _HP = 2.2;      
-            double _DMG = 1.3;
+            Type = t;
 
-            Type = "Rat";
-            LVL = l;
-            HP = (int)Math.Ceiling(_HP * l);
+            Level = r.Next((l - 3), (l + 2));
+            if(Level < 1)
+            {
+                Level = 1;
+            }
+
+            //HP = multiplier * enemy level
+            HP = (int)Math.Ceiling(h * Level);
             MaxHP = HP;
-            DMG = (int)Math.Ceiling(_DMG * l);
-            XP = (int)(2.29378 * l);
+
+            //Damage = multiplier * enemy level
+            Damage = (int)Math.Ceiling(d * Level);
+            
+            //EXP = multiplier * average of health and damage
+            EXP = (int)Math.Ceiling(1.34 * ((MaxHP + Damage) / 2));
         }
     }
 
-    class Spider : Enemy
+    class Enemies
     {
-        public Spider(int l)
-        {
-            //values
-            double _HP = 1.3;
-            double _DMG = 1.7;
+        static Random r = new Random();
 
-            Type = "Spider";
-            LVL = l;
-            HP = (int)Math.Ceiling(_HP * l);
-            MaxHP = HP;
-            DMG = (int)Math.Ceiling(_DMG * l);
-            XP = (int)(2.94734 * l);
+        public List<Enemy> list { get; set; }
+
+        public Enemies(int l)
+        {
+            /*      Enemy Generation:
+             *      
+             */
+            list = new List<Enemy>()
+            {
+                new Enemy("Rat", 2.2, 1.3, l),
+                new Enemy("Spider", 1.3, 1.7, l),
+            };
         }
     }
 }

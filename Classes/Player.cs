@@ -8,11 +8,11 @@ namespace Dark_Chambers
     {
         //used variables
         public string Name { get; set; }
-        public int LVL = 1;
+        public int Level = 1;
         public int MaxHP = 20;
         public int HP = 20;
-        public int MaxXP = 10;
-        public int XP = 0;
+        public int MaxEXP = 10;
+        public int EXP = 0;
         public Weapon WPN = new Weapon("Fist", 1, 50, null, 1);
         
 

@@ -8,16 +8,20 @@ namespace Dark_Chambers
     {
         public string Name { get; set; }
         public string Type { get; set; }
-        public int DMG { get; set; }
-        public int CRIT { get; set; }
+        public int Damage { get; set; }
+        public int Crit { get; set; }
 
         public State State { get; set; }
 
         public Weapon(string t, double d, int c, State s, int l)
         {
             Type = t;
-            DMG = (int)Math.Ceiling(d * l);
-            CRIT = c;
+
+            //Damage = multiplier * player level
+            Damage = (int)Math.Ceiling(d * l);
+
+            Crit = c;
+
             State = s;
         }
     }
@@ -28,7 +32,7 @@ namespace Dark_Chambers
 
         public List<Weapon> list = new List<Weapon>();
 
-        public Weapons(int l, State s = null)
+        public Weapons(int l, State s)
         {
             list = new List<Weapon>()
             {
@@ -55,7 +59,7 @@ namespace Dark_Chambers
 
     class States
     {
-        public List<State> states = new List<State>() {
+        public List<State> list = new List<State>() {
             new State("Broken", 0, -10),
             new State("Rusty", -10, 0),
             new State("Regular", 0, 0),

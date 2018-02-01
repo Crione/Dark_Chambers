@@ -7,15 +7,13 @@ namespace Dark_Chambers
     class Program
     {
         //Game variables
-        static Enemy e = new Enemy();
+        static Enemy e { get; set; }
         static Player p = new Player();
-        
-
         static Random r = new Random();
-        static bool Game = true;
 
+        static bool Game = true;
         static bool Active { get; set; }
-        static string Invoer { get; set; }
+        static string Input { get; set; }
         static int Percentage { get; set; }
 
         //Function methods
@@ -52,18 +50,18 @@ namespace Dark_Chambers
                 while (Break == false)
                 {
                     Write("(Enter 'yes' or 'no')", ConsoleColor.DarkGray, false);
-                    Invoer = Console.ReadLine().ToLower();
+                    Input = Console.ReadLine().ToLower();
                     Console.WriteLine();
-                    switch (Invoer)
+                    switch (Input)
                     {
                         case "yes":
                         case "y":
-                            Invoer = "yes";
+                            Input = "yes";
                             Break = true;
                             break;
                         case "no":
                         case "n":
-                            Invoer = "no";
+                            Input = "no";
                             Break = true;
                             break;
                         default:
@@ -74,18 +72,8 @@ namespace Dark_Chambers
             }
             else
             {
-                Invoer = Console.ReadLine();
+                Input = Console.ReadLine();
                 Console.WriteLine();
-            }
-        }
-
-        static void CheckHP()
-        {
-            Write("[HP " + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
-            if(p.HP <= 0)
-            {
-                Game = false;
-                Active = false;
             }
         }
 
@@ -97,51 +85,35 @@ namespace Dark_Chambers
 
         static void StartGame()
         {          
-            /*
-            Write("Please enter your name:", ConsoleColor.White);
-            Read();
-            p.Name = Invoer;
-            Read("Are you ready to enter the chambers?");
-            */
-
             while(Game == true)
             {
-                Event();
+                Percentage = r.Next(0, 101);
+                if (Percentage <= 80)
+                {
+                    Percentage = r.Next(0, 101);
+                    if (Percentage <= 50)
+                    {
+                        e = GetEnemy("Rat", p.Level);
+                    }
+                    else if (Percentage > 50 && Percentage <= 100)
+                    {
+                        e = GetEnemy("Spider", p.Level);
+                    }
+                    Battle(e);
+                }
+                else if (Percentage > 80 && Percentage <= 100)
+                {
+                    Console.WriteLine("Chest");
+                }
+                Console.ReadLine();
             }
             Write("You died!");           
-        }
-
-        static void Event()
-        {
-            Percentage = r.Next(0, 101);
-            if(Percentage <= 80)
-            {
-                int eLVL = r.Next((p.LVL - 3), (p.LVL + 2));
-                if(eLVL <= 0)
-                {
-                    eLVL = 1;
-                }
-                Percentage = r.Next(0, 101);
-                if (Percentage <= 50)
-                {
-                    e = new Rat(eLVL);
-                }else if(Percentage > 50 && Percentage <= 100)
-                {
-                    e = new Spider(eLVL);
-                }
-                Battle(e);
-            }
-            else if(Percentage > 80 && Percentage <= 100)
-            {
-                Console.WriteLine("Chest");
-            }
-            Console.ReadLine();
         }
 
         static void Battle(Enemy e)
         {
             Read("A " + e.Type + " attacks! Fight back?");
-            switch (Invoer)
+            switch (Input)
             {
                 case "yes":
                     Active = true;
@@ -152,9 +124,9 @@ namespace Dark_Chambers
                         while (Break == false)
                         {
                             Write("(Enter 'attack' or 'flee')", ConsoleColor.DarkGray, false);
-                            Invoer = Console.ReadLine();
+                            Input = Console.ReadLine();
                             Console.WriteLine();
-                            switch (Invoer)
+                            switch (Input)
                             {
                                 case "attack":
                                 case "a":
@@ -184,17 +156,17 @@ namespace Dark_Chambers
         {
             //player attacks
             Percentage = r.Next(0, 101);
-            if(Percentage <= p.WPN.CRIT)
+            if(Percentage <= p.WPN.Crit)
             {
-                int Crit = (int)Math.Ceiling(p.WPN.DMG * 1.5);
+                int Crit = (int)Math.Ceiling(p.WPN.Damage * 1.5);
                 Write("Critical hit!");
                 Write("You attack the " + e.Type + " for " + Crit + " damage.");
                 e.HP = e.HP - Crit;
             }
             else
             {
-                Write("You attack the " + e.Type + " for " + p.WPN.DMG + " damage.");
-                e.HP = e.HP - p.WPN.DMG;
+                Write("You attack the " + e.Type + " for " + p.WPN.Damage + " damage.");
+                e.HP = e.HP - p.WPN.Damage;
             }
 
             Write(e.Type, ConsoleColor.White, false, false);
@@ -202,28 +174,31 @@ namespace Dark_Chambers
             Console.WriteLine();
             if(e.HP <= 0)
             {
+                //the enemy died
                 Write("The " + e.Type + " died!");
 
-                p.XP = p.XP + e.XP;
-                Write("You gained " + e.XP + " EXP points.");
-                if(p.XP >= p.MaxXP)
+                p.EXP = p.EXP + e.EXP;
+                Write("You gained " + e.EXP + " EXP points.");
+                if(p.EXP >= p.MaxEXP)
                 {
+                    //the player levels up
                     LevelUp();
                 }
-                Write("[EXP " + p.XP + "/" + p.MaxXP + "]", ConsoleColor.DarkGray);
+                Write("[EXP " + p.EXP + "/" + p.MaxEXP + "]", ConsoleColor.DarkGray);
                 Active = false;
                 return;
             }
 
             //enemy attacks
-            Write("The " + e.Type + " attacks you for " + e.DMG + " damage.");
-            p.HP = p.HP - e.DMG;
+            Write("The " + e.Type + " attacks you for " + e.Damage + " damage.");
+            p.HP = p.HP - e.Damage;
             CheckHP();
             Console.WriteLine();
         }
         
         static void Flee()
         {
+            //player flees
             Percentage = r.Next(0, 101);
             if (Percentage <= 80)
             {
@@ -231,10 +206,19 @@ namespace Dark_Chambers
             }
             else if (Percentage > 80 && Percentage <= 100)
             {
-                int Damage = (int)Math.Ceiling(e.DMG * 0.5);
+                int Damage = (int)Math.Ceiling(e.Damage * 0.5);
                 p.HP = p.HP - Damage;
                 Write("The " + e.Type + " attacks you for " + Damage + " damage.");
                 CheckHP();
+            }
+        }
+
+        static void CheckHP()
+        {
+            Write("[HP " + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
+            if (p.HP <= 0)
+            {
+                Game = false;
             }
         }
 
@@ -242,8 +226,8 @@ namespace Dark_Chambers
         {
             Console.WriteLine();
             Write("You leveled up!");
-            p.LVL = p.LVL + 1;
-            Write("[LVL " + p.LVL + "]");
+            p.Level = p.Level + 1;
+            Write("[LVL " + p.Level + "]");
 
             Console.WriteLine();
             Write("HP increased by 4 points.");
@@ -251,14 +235,53 @@ namespace Dark_Chambers
             p.HP = p.HP + 4;
             Write("[HP " + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
 
-            p.XP = p.XP - p.MaxXP;
-            p.MaxXP = (int)Math.Ceiling(p.MaxXP * 1.5);
+            p.EXP = p.EXP - p.MaxEXP;
+            p.MaxEXP = (int)Math.Ceiling(p.MaxEXP * 1.5);
         }
 
         static Weapon GetWeapon(string type, int l)
         {
-            Weapons weapons = new Weapons(l);
+            //get weapon state
+            States states = new States();
+            string State = "Regular";
+
+            Percentage = r.Next(0, 101);
+            if(Percentage <= 15)
+            {
+                //Broken state (-10% Crit), 15%
+                State = "Broken";
+            }
+            else if(Percentage > 15 && Percentage <= 30)
+            {
+                //Rusty state (-10% Damage), 15%
+                State = "Rusty";
+            }
+            else if(Percentage > 30 && Percentage <= 70)
+            {
+                //Regular state, 40%
+                State = "Regular";
+            }
+            else if(Percentage > 70 && Percentage <= 85)
+            {
+                //Sharpened state (+10% Damage), 15%
+                State = "Sharpened";
+            }
+            else if(Percentage > 85 && Percentage <= 100)
+            {
+                //Shiny state (+10% Crit), 15%
+                State = "Shiny";
+            }
+            State s = states.list.Single(c => c.Prefix == State);
+
+            Weapons weapons = new Weapons(l, s);
             Weapon w = weapons.list.Single(c => c.Type == type);
+            return w;
+        }
+
+        static Enemy GetEnemy(string type, int l)
+        {
+            Enemies enemies = new Enemies(l);
+            Enemy w = enemies.list.Single(c => c.Type == type);
             return w;
         }
     }
