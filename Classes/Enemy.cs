@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Dark_Chambers
-{
+{ 
     class Enemy
     {
+        protected Random r = new Random();
+
         //used variables
         public string Type { get; set; }
         public int LVL { get; set; }
@@ -23,15 +25,16 @@ namespace Dark_Chambers
     {
         public Rat(int l)
         {
+            //values
+            double _HP = 2.2;      
+            double _DMG = 1.3;
+
             Type = "Rat";
             LVL = l;
-            HP = (int)Math.Ceiling(1.8 * l);
+            HP = (int)Math.Ceiling(_HP * l);
             MaxHP = HP;
-            DMG = (int)Math.Ceiling(0.7 * l);
+            DMG = (int)Math.Ceiling(_DMG * l);
             XP = (int)(2.29378 * l);
-
-            //unused
-            DEF = 1;
         }
     }
 
@@ -39,15 +42,16 @@ namespace Dark_Chambers
     {
         public Spider(int l)
         {
+            //values
+            double _HP = 1.3;
+            double _DMG = 1.7;
+
             Type = "Spider";
             LVL = l;
-            HP = (int)Math.Ceiling(1.3 * l);
+            HP = (int)Math.Ceiling(_HP * l);
             MaxHP = HP;
-            DMG = (int)Math.Ceiling(1.7 * l);
+            DMG = (int)Math.Ceiling(_DMG * l);
             XP = (int)(2.94734 * l);
-
-            //unused
-            DEF = 1;
         }
     }
 }

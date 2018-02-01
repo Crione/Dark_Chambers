@@ -1,9 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Dark_Chambers
 {
     class Program
     {
+        //Game variables
+        static Enemy e = new Enemy();
+        static Player p = new Player();
+        
+
+        static Random r = new Random();
+        static bool Game = true;
+
+        static bool Active { get; set; }
+        static string Invoer { get; set; }
+        static int Percentage { get; set; }
 
         //Function methods
         static void Write(string Invoer, ConsoleColor Color = ConsoleColor.White, bool Sleep = true ,bool WriteLine = true)
@@ -39,7 +52,7 @@ namespace Dark_Chambers
                 while (Break == false)
                 {
                     Write("(Enter 'yes' or 'no')", ConsoleColor.DarkGray, false);
-                    Invoer = Console.ReadLine();
+                    Invoer = Console.ReadLine().ToLower();
                     Console.WriteLine();
                     switch (Invoer)
                     {
@@ -76,18 +89,6 @@ namespace Dark_Chambers
             }
         }
 
-        //Game variables
-
-        static Enemy e = new Enemy();
-        static Player p = new Player();
-        static bool Game = true;
-
-        static bool Active { get; set; }
-        static string Invoer { get; set; }
-        static int Percentage { get; set; }
-        static Random r = new Random();
-
-
         //Game
         static void Main(string[] args)
         {
@@ -95,18 +96,19 @@ namespace Dark_Chambers
         }
 
         static void StartGame()
-        {
+        {          
             /*
             Write("Please enter your name:", ConsoleColor.White);
             Read();
             p.Name = Invoer;
             Read("Are you ready to enter the chambers?");
             */
+
             while(Game == true)
             {
                 Event();
             }
-            Write("You died!");
+            Write("You died!");           
         }
 
         static void Event()
@@ -219,7 +221,7 @@ namespace Dark_Chambers
             CheckHP();
             Console.WriteLine();
         }
-
+        
         static void Flee()
         {
             Percentage = r.Next(0, 101);
@@ -251,6 +253,13 @@ namespace Dark_Chambers
 
             p.XP = p.XP - p.MaxXP;
             p.MaxXP = (int)Math.Ceiling(p.MaxXP * 1.5);
+        }
+
+        static Weapon GetWeapon(string type, int l)
+        {
+            Weapons weapons = new Weapons(l);
+            Weapon w = weapons.list.Single(c => c.Type == type);
+            return w;
         }
     }
 }

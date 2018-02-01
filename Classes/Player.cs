@@ -13,8 +13,8 @@ namespace Dark_Chambers
         public int HP = 20;
         public int MaxXP = 10;
         public int XP = 0;
-
-        public Weapon WPN = new Fist();
+        public Weapon WPN = new Weapon("Fist", 1, 50, null, 1);
+        
 
         //unused variables
         public int Coins { get; set; }
