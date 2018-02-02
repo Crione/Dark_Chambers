@@ -6,6 +6,8 @@ namespace Dark_Chambers
 {
     class Player
     {
+        static Function f = new Function();
+
         //used variables
         public string Name { get; set; }
         public int Level = 1;
@@ -13,7 +15,7 @@ namespace Dark_Chambers
         public int HP = 20;
         public int MaxEXP = 10;
         public int EXP = 0;
-        public Weapon WPN = new Weapon("Fist", 1, 50, null, 1);
+        public Weapon Weapon = new Weapon("Fist", 1, 50, f.GetState("", 0, 0), 1);
         
 
         //unused variables

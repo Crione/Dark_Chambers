@@ -19,12 +19,13 @@ namespace Dark_Chambers
         //unused variables
         public int Defence { get; set; }
         public int Coins { get; set; }
+        public Item Item { get; set; }
 
-        public Enemy(string t, double h, double d, int l)
+        public Enemy(string t, double h, double d, Player p)
         {
             Type = t;
 
-            Level = r.Next((l - 3), (l + 2));
+            Level = r.Next((p.Level - 3), (p.Level + 2));
             if(Level < 1)
             {
                 Level = 1;
@@ -48,15 +49,20 @@ namespace Dark_Chambers
 
         public List<Enemy> list { get; set; }
 
-        public Enemies(int l)
+        public Enemies(Player p)
         {
             /*      Enemy Generation:
-             *      
+             *      (t, h, d, p)
+             *      t = type
+             *      h = hp
+             *      d = damage
+             *      p = player
              */
             list = new List<Enemy>()
             {
-                new Enemy("Rat", 2.2, 1.3, l),
-                new Enemy("Spider", 1.3, 1.7, l),
+                new Enemy("Rat", 2.2, 1.3, p),
+                new Enemy("Spider", 1.3, 1.7, p),
+                new Enemy("Mimic", 1.6, 2.4, p)
             };
         }
     }

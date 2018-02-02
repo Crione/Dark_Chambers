@@ -9,6 +9,7 @@ namespace Dark_Chambers
         //Game variables
         static Enemy e { get; set; }
         static Player p = new Player();
+        static Function f = new Function();
         static Random r = new Random();
 
         static bool Game = true;
@@ -72,9 +73,60 @@ namespace Dark_Chambers
             }
             else
             {
-                Input = Console.ReadLine();
+                Input = Console.ReadLine().ToLower();
                 Console.WriteLine();
             }
+        }
+
+        static void Command(string Input)
+        {
+            while(Input != "")
+            {
+                switch (Input)
+                {
+                    case "stats":
+                        WeaponStats(p.Weapon);
+                        break;
+                }
+                Input = Console.ReadLine();
+            }
+        }
+
+        static void WeaponStats(Weapon w)
+        {
+            string Weapon = w.State.Prefix + w.Type;
+            int Length = (int)Math.Ceiling((double)(20 - Weapon.Length) / 2);
+
+            Console.Write("0");
+            for(int i = 0; i < Length; i++)
+            {
+                Console.Write("-");
+            }
+            Console.Write(Weapon);
+            Length = 20 - (Length + Weapon.Length); 
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write("-");
+            }
+            Console.WriteLine("0");
+
+            Length = 20 - ("DMG" + w.Damage).Length;
+            Console.Write("|DMG");
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.WriteLine(w.Damage + "|");
+
+            Length = 20 - ("CRIT" + w.Crit).Length;
+            Console.Write("|CRIT");
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.WriteLine(w.Crit + "|");
+
+            Console.WriteLine("0--------------------0");
         }
 
         //Game
@@ -90,22 +142,22 @@ namespace Dark_Chambers
                 Percentage = r.Next(0, 101);
                 if (Percentage <= 80)
                 {
+                    string enemy = "Rat";
                     Percentage = r.Next(0, 101);
                     if (Percentage <= 50)
                     {
-                        e = GetEnemy("Rat", p.Level);
+                        enemy = "Rat";
                     }
                     else if (Percentage > 50 && Percentage <= 100)
                     {
-                        e = GetEnemy("Spider", p.Level);
+                        enemy = "Spider";
                     }
-                    Battle(e);
+                    Battle(f.GetEnemy(enemy, p));
                 }
                 else if (Percentage > 80 && Percentage <= 100)
                 {
                     Console.WriteLine("Chest");
                 }
-                Console.ReadLine();
             }
             Write("You died!");           
         }
@@ -156,17 +208,17 @@ namespace Dark_Chambers
         {
             //player attacks
             Percentage = r.Next(0, 101);
-            if(Percentage <= p.WPN.Crit)
+            if(Percentage <= p.Weapon.Crit)
             {
-                int Crit = (int)Math.Ceiling(p.WPN.Damage * 1.5);
+                int Crit = (int)Math.Ceiling(p.Weapon.Damage * 1.5);
                 Write("Critical hit!");
                 Write("You attack the " + e.Type + " for " + Crit + " damage.");
                 e.HP = e.HP - Crit;
             }
             else
             {
-                Write("You attack the " + e.Type + " for " + p.WPN.Damage + " damage.");
-                e.HP = e.HP - p.WPN.Damage;
+                Write("You attack the " + e.Type + " for " + p.Weapon.Damage + " damage.");
+                e.HP = e.HP - p.Weapon.Damage;
             }
 
             Write(e.Type, ConsoleColor.White, false, false);
@@ -237,52 +289,6 @@ namespace Dark_Chambers
 
             p.EXP = p.EXP - p.MaxEXP;
             p.MaxEXP = (int)Math.Ceiling(p.MaxEXP * 1.5);
-        }
-
-        static Weapon GetWeapon(string type, int l)
-        {
-            //get weapon state
-            States states = new States();
-            string State = "Regular";
-
-            Percentage = r.Next(0, 101);
-            if(Percentage <= 15)
-            {
-                //Broken state (-10% Crit), 15%
-                State = "Broken";
-            }
-            else if(Percentage > 15 && Percentage <= 30)
-            {
-                //Rusty state (-10% Damage), 15%
-                State = "Rusty";
-            }
-            else if(Percentage > 30 && Percentage <= 70)
-            {
-                //Regular state, 40%
-                State = "Regular";
-            }
-            else if(Percentage > 70 && Percentage <= 85)
-            {
-                //Sharpened state (+10% Damage), 15%
-                State = "Sharpened";
-            }
-            else if(Percentage > 85 && Percentage <= 100)
-            {
-                //Shiny state (+10% Crit), 15%
-                State = "Shiny";
-            }
-            State s = states.list.Single(c => c.Prefix == State);
-
-            Weapons weapons = new Weapons(l, s);
-            Weapon w = weapons.list.Single(c => c.Type == type);
-            return w;
-        }
-
-        static Enemy GetEnemy(string type, int l)
-        {
-            Enemies enemies = new Enemies(l);
-            Enemy w = enemies.list.Single(c => c.Type == type);
-            return w;
         }
     }
 }
