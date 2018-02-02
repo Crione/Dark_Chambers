@@ -19,8 +19,7 @@ namespace Dark_Chambers
 
         //unused variables
         public int Defence { get; set; }
-        public int Coins { get; set; }
-        public Item Item { get; set; }
+        public int Loot { get; set; }
 
         public Enemy(string t, double h, double d, Player p)
         {

@@ -11,10 +11,15 @@ namespace Dark_Chambers
 
     class Potion : Item
     {
-
+        
     }
 
     class Key : Item
+    {
+
+    }
+
+    class Coin : Item
     {
 
     }

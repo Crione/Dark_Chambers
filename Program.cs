@@ -84,12 +84,47 @@ namespace Dark_Chambers
             {
                 switch (Input)
                 {
-                    case "stats":
+                    case "bag":
+                        ViewBag(p.Bag);
                         WeaponStats(p.Weapon);
+                        break;
+                    case "potion":
+                        UsePotion();
                         break;
                 }
                 Input = Console.ReadLine();
             }
+        }
+
+        static void ViewBag(Bag b)
+        {
+            int Length;
+
+            Console.WriteLine("0---------Bag--------0");
+
+            Length = 20 - ("Coins" + b.Coins).Length;
+            Console.Write("|Coins");
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.WriteLine(b.Coins + "|");
+
+            Length = 20 - ("Potions" + b.Potions).Length;
+            Console.Write("|Potions");
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.WriteLine(b.Potions + "|");
+
+            Length = 20 - ("Keys" + b.Keys).Length;
+            Console.Write("|Keys");
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.WriteLine(b.Keys + "|");
         }
 
         static void WeaponStats(Weapon w)
@@ -139,8 +174,9 @@ namespace Dark_Chambers
         {          
             while(Game == true)
             {
+                Command(Console.ReadLine());
                 Percentage = r.Next(0, 101);
-                if (Percentage <= 80)
+                if (Percentage <= 70)
                 {
                     string enemy = "Rat";
                     Percentage = r.Next(0, 101);
@@ -154,7 +190,7 @@ namespace Dark_Chambers
                     }
                     Battle(f.GetEnemy(enemy, p));
                 }
-                else if (Percentage > 80 && Percentage <= 100)
+                else if (Percentage > 70 && Percentage <= 100)
                 {
                     Chest();
                 }
@@ -175,9 +211,8 @@ namespace Dark_Chambers
                         bool Break = false;
                         while (Break == false)
                         {
-                            Write("(Enter 'attack' or 'flee')", ConsoleColor.DarkGray, false);
-                            Input = Console.ReadLine();
-                            Console.WriteLine();
+                            Write("(Enter 'attack', 'potion' or 'flee')", ConsoleColor.DarkGray, false);
+                            Read();
                             switch (Input)
                             {
                                 case "attack":
@@ -185,9 +220,14 @@ namespace Dark_Chambers
                                     Attack(e);
                                     Break = true;
                                     break;
+                                case "potion":
+                                case "p":
+                                    UsePotion();
+                                    Break = true;
+                                    break;
                                 case "flee":
                                 case "f":
-                                    Flee();
+                                    Flee(e);
                                     Active = false;
                                     Break = true;
                                     break;
@@ -196,10 +236,14 @@ namespace Dark_Chambers
                                     break;
                             }
                         }
+                        if(e.HP > 0)
+                        {
+                            EnemyTurn(e);
+                        }
                     }
                     break;
                 case "no":
-                    Flee();
+                    Flee(e);
                     break;
             }
         }
@@ -238,18 +282,26 @@ namespace Dark_Chambers
                 }
                 Write("[EXP " + p.EXP + "/" + p.MaxEXP + "]", ConsoleColor.DarkGray);
                 Active = false;
-                Console.WriteLine();
-                return;
             }
-
-            //enemy attacks
-            Write("The " + e.Type + " attacks you for " + e.Damage + " damage.");
-            p.HP = p.HP - e.Damage;
-            CheckHP();
-            Console.WriteLine();
         }
         
-        static void Flee()
+        static void UsePotion()
+        {
+            if(p.Bag.Potions != 0)
+            {
+                Write("You drink a potion.");
+                Write("Your health has been increased by 4 points!");
+                p.HP = p.HP + 4;
+                CheckHP();
+            }
+            else
+            {
+                Write("You don't have any potions!");
+            }
+            Console.WriteLine();
+        }
+
+        static void Flee(Enemy e)
         {
             //player flees
             Percentage = r.Next(0, 101);
@@ -264,6 +316,14 @@ namespace Dark_Chambers
                 Write("The " + e.Type + " attacks you for " + Damage + " damage.");
                 CheckHP();
             }
+            Console.WriteLine();
+        }
+
+        static void EnemyTurn(Enemy e)
+        {
+            Write("The " + e.Type + " attacks you for " + e.Damage + " damage.");
+            p.HP = p.HP - e.Damage;
+            CheckHP();
             Console.WriteLine();
         }
 
@@ -302,10 +362,39 @@ namespace Dark_Chambers
                 case "yes":
                     Write("You open the chest...");
                     Percentage = r.Next(0, 101);
-                    if(Percentage <= 80)
+                    if(Percentage <= 60)
+                    {
+                        Percentage = r.Next(0, 101);
+                        if(Percentage <= 40)
+                        {
+                            int Coins = r.Next((int)Math.Ceiling(p.Level * 0.8), (int)Math.Ceiling(p.Level * 1.4) + 1);                            
+                            Write("There are " + Coins + " coins inside!");
+                            Write("You put the coins in your bag");
+                            p.Bag.Coins = p.Bag.Coins + Coins;
+                            Console.WriteLine("[COINS " + p.Bag.Coins + "]");
+                        }
+                        else if(Percentage > 40 && Percentage <= 80)
+                        {
+                            int Potions = r.Next(1, 4);
+                            Write("There are " + Potions + " potions inside!");
+                            Write("You put the potions in your bag");
+                            p.Bag.Potions = p.Bag.Potions + Potions;
+                            Console.WriteLine("[POTIONS " + p.Bag.Potions + "]");
+                        }
+                        else if(Percentage > 80 && Percentage <= 100)
+                        {
+                            int Keys = r.Next(1, 3);
+                            Write("There are " + Keys + " keys inside!");
+                            Write("You put the keys in your bag");
+                            p.Bag.Keys = p.Bag.Keys + Keys;
+                            Console.WriteLine("[KEYS " + p.Bag.Keys + "]");
+                        }
+                    }
+                    else if(Percentage > 60 && Percentage <= 90)
                     {                     
                         string[] Weapons = new string[] {"Sword", "Axe", "Dagger"};
-                        Weapon w = f.GetWeapon(Weapons[(r.Next(0, Weapons.Length)) - 1], p);
+                        int weapon = r.Next(1, Weapons.Length) - 1;
+                        Weapon w = f.GetWeapon(Weapons[weapon], p);
 
                         Write("There is a " + w.State.Prefix + w.Type + " inside!");
                         Console.WriteLine();
@@ -323,7 +412,8 @@ namespace Dark_Chambers
                                 break;
                         }
                     }
-                    else if(Percentage > 80 && Percentage <= 100)
+
+                    else if(Percentage > 90 && Percentage <= 100)
                     {
                         Battle(f.GetEnemy("Mimic", p));
                     }
