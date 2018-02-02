@@ -19,7 +19,7 @@ namespace Dark_Chambers
             State = s;
 
             //Damage = (multiplier * player level) + state boost
-            Damage = (int)Math.Ceiling((d * 6) + ((d * 6) / 100) * s.Damage);
+            Damage = (int)Math.Ceiling((d * l) + ((d * l) / 100) * s.Damage);
 
             //Crit = crit chance + state boost
             Crit = (c) + s.Crit;

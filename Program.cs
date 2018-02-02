@@ -156,7 +156,7 @@ namespace Dark_Chambers
                 }
                 else if (Percentage > 80 && Percentage <= 100)
                 {
-                    Console.WriteLine("Chest");
+                    Chest();
                 }
             }
             Write("You died!");           
@@ -238,6 +238,7 @@ namespace Dark_Chambers
                 }
                 Write("[EXP " + p.EXP + "/" + p.MaxEXP + "]", ConsoleColor.DarkGray);
                 Active = false;
+                Console.WriteLine();
                 return;
             }
 
@@ -263,6 +264,7 @@ namespace Dark_Chambers
                 Write("The " + e.Type + " attacks you for " + Damage + " damage.");
                 CheckHP();
             }
+            Console.WriteLine();
         }
 
         static void CheckHP()
@@ -271,6 +273,7 @@ namespace Dark_Chambers
             if (p.HP <= 0)
             {
                 Game = false;
+                Active = false;
             }
         }
 
@@ -289,6 +292,46 @@ namespace Dark_Chambers
 
             p.EXP = p.EXP - p.MaxEXP;
             p.MaxEXP = (int)Math.Ceiling(p.MaxEXP * 1.5);
+        }
+
+        static void Chest()
+        {
+            Read("You found a chest! Do you want to open it?");
+            switch (Input)
+            {
+                case "yes":
+                    Write("You open the chest...");
+                    Percentage = r.Next(0, 101);
+                    if(Percentage <= 80)
+                    {                     
+                        string[] Weapons = new string[] {"Sword", "Axe", "Dagger"};
+                        Weapon w = f.GetWeapon(Weapons[(r.Next(0, Weapons.Length)) - 1], p);
+
+                        Write("There is a " + w.State.Prefix + w.Type + " inside!");
+                        Console.WriteLine();
+                        WeaponStats(w);
+                        Console.WriteLine();
+                        Read("Do you want to take it with you?");
+                        switch (Input)
+                        {
+                            case "yes":
+                                Write("You take the " + w.State.Prefix + w.Type + ".");
+                                p.Weapon = w;
+                                break;
+                            case "no":
+                                Write("You leave the " + w.State.Prefix + w.Type + ".");
+                                break;
+                        }
+                    }
+                    else if(Percentage > 80 && Percentage <= 100)
+                    {
+                        Battle(f.GetEnemy("Mimic", p));
+                    }
+                    break;
+                case "no":
+                    Write("You continue your journey.");
+                    break;
+            }
         }
     }
 }

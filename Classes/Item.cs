@@ -6,7 +6,7 @@ namespace Dark_Chambers
 {
     class Item
     {
-
+        public int Amount { get; set; }
     }
 
     class Potion : Item

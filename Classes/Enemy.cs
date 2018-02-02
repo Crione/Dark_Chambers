@@ -6,6 +6,7 @@ namespace Dark_Chambers
 { 
     class Enemy
     {
+        static int Percentage { get; set; }
         static Random r = new Random();
 
         //used variables
