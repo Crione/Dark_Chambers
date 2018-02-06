@@ -17,21 +17,21 @@ namespace Dark_Chambers
         public int MaxEXP = 10;
         public int EXP = 0;
 
-        public Weapon Weapon = new Weapon("Fist", 1, 50, f.GetState("", 0, 0), 1);
+        public Weapon Weapon = new Weapon("Fist", 1, 50, f.GetState(""), 1);
         public Bag Bag = new Bag();
     }
 
     class Bag
     {
-        public int Potions { get; set; }
-        public int Keys { get; set; }
-        public int Coins { get; set; }
+        public Item Potion { get; set; }
+        public Item Key { get; set; }
+        public Item Coin { get; set; }
 
         public Bag()
         {
-            Coins = 0;
-            Potions = 0;
-            Keys = 1;
+            Coin = new Item("Coin", 10);
+            Potion = new Item("Potion", 2);
+            Key = new Item("Key", 1);
         }
     }
 }

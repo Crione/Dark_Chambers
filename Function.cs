@@ -11,40 +11,38 @@ namespace Dark_Chambers
         static int Percentage;
         static Random r = new Random();
 
-        public Weapon GetWeapon(string type, Player p)
+        public Weapon GetWeapon(string type, Player p, string state = null)
         {
-            //get weapon state
-            States states = new States();
-            string State = "Regular";
-
-            Percentage = r.Next(0, 101);
-            if (Percentage <= 15)
+            if (state == null)
             {
-                //Broken state (-10% Crit), 15%
-                State = "Broken";
+                Percentage = r.Next(1, 101);
+                if(Percentage <= 15)
+                {
+                    state = "Broken";
+                }
+                else if(Percentage > 15 && Percentage <= 30)
+                {
+                    state = "Rusty";
+                }
+                else if(Percentage > 30 && Percentage <= 70)
+                {
+                    state = "Regular";
+                }
+                else if(Percentage > 70 && Percentage <= 85)
+                {
+                    state = "Sharpened";
+                }
+                else if(Percentage > 85 && Percentage <= 100)
+                {
+                    state = "Shiny";
+                }
+                else
+                {
+                    state = "Regular";
+                }
             }
-            else if (Percentage > 15 && Percentage <= 30)
-            {
-                //Rusty state (-10% Damage), 15%
-                State = "Rusty";
-            }
-            else if (Percentage > 30 && Percentage <= 70)
-            {
-                //Regular state, 40%
-                State = "Regular";
-            }
-            else if (Percentage > 70 && Percentage <= 85)
-            {
-                //Sharpened state (+10% Damage), 15%
-                State = "Sharpened";
-            }
-            else if (Percentage > 85 && Percentage <= 100)
-            {
-                //Shiny state (+10% Crit), 15%
-                State = "Shiny";
-            }
-            State = State + " ";
-            State s = states.list.Single(c => c.Prefix == State);
+            state = state + " ";
+            State s = GetState(state);
 
             Weapons weapons = new Weapons(p, s);
             Weapon w = weapons.list.Single(c => c.Type == type);
@@ -58,10 +56,25 @@ namespace Dark_Chambers
             return w;
         }
 
-        public State GetState(string prefix, int damage, int crit)
+        public State GetState(string prefix)
         {
-            State state = new State(prefix, damage, crit);
-            return state;
+            States states = new States();
+            State s = states.list.Single(c => c.Prefix == prefix);
+            return s;
+        }
+
+        public Chest GetChest(string type, Player p)
+        {
+            Chests chests = new Chests(p);
+            Chest s = chests.list.Single(c => c.Type == type);
+            return s;
+        }
+
+        public Item GetItem(string type, int l)
+        {
+            Items items = new Items(l);
+            Item i = items.list.Single(c => c.Type == type);
+            return i;
         }
     }
 }

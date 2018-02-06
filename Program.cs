@@ -8,7 +8,7 @@ namespace Dark_Chambers
     {
         //Game variables
         static Enemy e { get; set; }
-        static Player p = new Player();
+        static Player p = new Player();       
         static Function f = new Function();
         static Random r = new Random();
 
@@ -18,12 +18,15 @@ namespace Dark_Chambers
         static int Percentage { get; set; }
 
         //Function methods
-        static void Write(string Invoer, ConsoleColor Color = ConsoleColor.White, bool Sleep = true ,bool WriteLine = true)
+        /*      Write Method:
+         *      
+         */
+        static void Write(string input, ConsoleColor color = ConsoleColor.White, bool sleep = true ,bool writeline = true)
         {
-            Console.ForegroundColor = Color;
-            if (Sleep == true)
+            Console.ForegroundColor = color;
+            if (sleep == true)
             {
-                char[] text = Invoer.ToCharArray();
+                char[] text = input.ToCharArray();
                 int Lenght = text.Length;
                 for (int i = 0; i <= (Lenght - 1); i++)
                 {
@@ -33,15 +36,18 @@ namespace Dark_Chambers
             }
             else
             {
-                Console.Write(Invoer);
+                Console.Write(input);
             }
-            if(WriteLine == true)
+            if(writeline == true)
             {
                 Console.WriteLine();
             }
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        /*      Read Method:
+         *      
+         */
         static void Read(string Query = "")
         {
             if(Query != "")
@@ -80,57 +86,122 @@ namespace Dark_Chambers
 
         static void Command(string Input)
         {
-            while(Input != "")
+            while (Input != "")
             {
+                Console.WriteLine();
                 switch (Input)
                 {
+                    case "stats":
+                    case "s":
+                        ViewStats(p);
+                        break;
                     case "bag":
+                    case "b":
                         ViewBag(p.Bag);
-                        WeaponStats(p.Weapon);
                         break;
                     case "potion":
+                    case "p":
                         UsePotion();
                         break;
+                    default:
+                        Console.WriteLine("Unknown Command.");
+                        break;
                 }
+                Console.WriteLine();
                 Input = Console.ReadLine();
             }
+        }
+
+        static void UsePotion()
+        {
+            if (p.Bag.Potion.Amount != 0)
+            {
+                Write("You drink a potion.");
+                Write("Your health has been increased by 4 points!");
+                p.HP = p.HP + 4;
+                CheckHP();
+                p.Bag.Potion.Amount = p.Bag.Potion.Amount - 1;
+            }
+            else
+            {
+                Write("You don't have any potions!");
+            }
+        }
+
+        static void ViewStats(Player p)
+        {
+            int Length;
+
+            string Name = p.Name + "[" + p.Level + "]";
+            Length = (int)Math.Floor((double)(20 - Name.Length) / 2);
+            Console.Write("0");
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write("-");
+            }
+            Console.Write(Name);
+            Length = 20 - (Length + Name.Length);
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write("-");
+            }
+            Console.WriteLine("0");
+
+            Length = 20 - ("HP" + "[" + p.HP + "/" + p.MaxHP + "]").Length;
+            Console.Write("|HP");
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.WriteLine("[" + p.HP + "/" + p.MaxHP + "]" + "|");
+
+            Length = 20 - ("EXP" + "[" + p.EXP + "/" + p.MaxEXP + "]").Length;
+            Console.Write("|EXP");
+            for (int i = 0; i < Length; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.WriteLine("[" + p.EXP + "/" + p.MaxEXP + "]" + "|");
+
+            Console.WriteLine("0--------------------0");
         }
 
         static void ViewBag(Bag b)
         {
             int Length;
 
-            Console.WriteLine("0---------Bag--------0");
+            Console.WriteLine("0--------Bag---------0");
 
-            Length = 20 - ("Coins" + b.Coins).Length;
+            Length = 20 - ("Coins" + b.Coin.Amount).Length;
             Console.Write("|Coins");
             for (int i = 0; i < Length; i++)
             {
                 Console.Write(" ");
             }
-            Console.WriteLine(b.Coins + "|");
+            Console.WriteLine(b.Coin.Amount + "|");
 
-            Length = 20 - ("Potions" + b.Potions).Length;
+            Length = 20 - ("Potions" + b.Potion.Amount).Length;
             Console.Write("|Potions");
             for (int i = 0; i < Length; i++)
             {
                 Console.Write(" ");
             }
-            Console.WriteLine(b.Potions + "|");
+            Console.WriteLine(b.Potion.Amount + "|");
 
-            Length = 20 - ("Keys" + b.Keys).Length;
+            Length = 20 - ("Keys" + b.Key.Amount).Length;
             Console.Write("|Keys");
             for (int i = 0; i < Length; i++)
             {
                 Console.Write(" ");
             }
-            Console.WriteLine(b.Keys + "|");
+            Console.WriteLine(b.Key.Amount + "|");
+            WeaponStats(p.Weapon);
         }
 
         static void WeaponStats(Weapon w)
         {
             string Weapon = w.State.Prefix + w.Type;
-            int Length = (int)Math.Ceiling((double)(20 - Weapon.Length) / 2);
+            int Length = (int)Math.Floor((double)(20 - Weapon.Length) / 2);
 
             Console.Write("0");
             for(int i = 0; i < Length; i++)
@@ -171,36 +242,68 @@ namespace Dark_Chambers
         }
 
         static void StartGame()
-        {          
+        {
+            Write("Enter your name:");
+            p.Name = Console.ReadLine();
+            Console.WriteLine();
             while(Game == true)
             {
-                Command(Console.ReadLine());
                 Percentage = r.Next(0, 101);
-                if (Percentage <= 70)
+                if(Percentage <= 70)
                 {
-                    string enemy = "Rat";
                     Percentage = r.Next(0, 101);
-                    if (Percentage <= 50)
+                    if(Percentage <= 30)
                     {
-                        enemy = "Rat";
+                        Battle(f.GetEnemy("Rat", p));
                     }
-                    else if (Percentage > 50 && Percentage <= 100)
+                    else if(Percentage > 30 && Percentage <= 60)
                     {
-                        enemy = "Spider";
+                        Battle(f.GetEnemy("Spider", p));
                     }
-                    Battle(f.GetEnemy(enemy, p));
+                    else if(Percentage > 60 && Percentage <= 75)
+                    {
+                        Battle(f.GetEnemy("Skeleton", p));
+                    }
+                    else if(Percentage > 75 && Percentage <= 90)
+                    {
+                        Battle(f.GetEnemy("Kobold", p));
+                    }
+                    else if(Percentage > 90 && Percentage <= 100)
+                    {
+                        Battle(f.GetEnemy("Orc", p));
+                    }
                 }
                 else if (Percentage > 70 && Percentage <= 100)
                 {
-                    Chest();
+                    Percentage = r.Next(1, 101);
+                    if (Percentage <= 40)
+                    {
+                        Chest(f.GetChest("Regular Chest", p));
+                    }
+                    else if (Percentage > 40 && Percentage <= 70)
+                    {
+                        Chest(f.GetChest("Lootbag", p));
+                    }
+                    else if (Percentage > 70 && Percentage <= 90)
+                    {
+                        Chest(f.GetChest("Locked Chest", p));
+                    }
+                    else if(Percentage > 90 && Percentage <= 100)
+                    {
+                        Chest(f.GetChest("Regular Chest", p), true);
+                    }
+
                 }
+                Console.WriteLine();
+                Command(Console.ReadLine());
             }
-            Write("You died!");           
+            Write("You died!");
+            Console.ReadLine();
         }
 
         static void Battle(Enemy e)
         {
-            Read("A " + e.Type + " attacks! Fight back?");
+            Read("A " + e.Type + "[" + e.Level + "] attacks! Fight back?");
             switch (Input)
             {
                 case "yes":
@@ -230,7 +333,7 @@ namespace Dark_Chambers
                                     Flee(e);
                                     Active = false;
                                     Break = true;
-                                    break;
+                                    return;
                                 default:
                                     Break = false;
                                     break;
@@ -265,13 +368,45 @@ namespace Dark_Chambers
                 e.HP = e.HP - p.Weapon.Damage;
             }
 
-            Write(e.Type, ConsoleColor.White, false, false);
             Write("[" + e.HP + "/" + e.MaxHP + "]", ConsoleColor.DarkRed, false);
             Console.WriteLine();
             if(e.HP <= 0)
             {
                 //the enemy died
                 Write("The " + e.Type + " died!");
+
+                //the enemy drops loot
+                if(e.Loot != null)
+                {
+                    Console.WriteLine();
+                    if (e.Loot.Amount == 1)
+                    {
+                        Write("It dropped a " + e.Loot.Type + "!");
+                        Write("You put the " + e.Loot.Type + " in your bag.");
+                    }
+                    else
+                    {
+                        Write("It dropped " + e.Loot.Amount + " " + e.Loot.Type + "s!");
+                        Write("You put the " + e.Loot.Type + "s in your bag.");
+                    }
+
+                    if (e.Loot.Type == "Potion")
+                    {
+                        p.Bag.Potion.Amount = p.Bag.Potion.Amount + e.Loot.Amount;
+                        Write("Potion[" + p.Bag.Potion.Amount + "]", ConsoleColor.DarkMagenta, false);
+                    }
+                    else if (e.Loot.Type == "Key")
+                    {
+                        p.Bag.Key.Amount = p.Bag.Key.Amount + e.Loot.Amount;
+                        Write("Key[" + p.Bag.Key.Amount + "]", ConsoleColor.DarkGray, false);
+                    }
+                    else if (e.Loot.Type == "Coin")
+                    {
+                        p.Bag.Coin.Amount = p.Bag.Coin.Amount + e.Loot.Amount;
+                        Write("Coin[" + p.Bag.Coin.Amount + "]", ConsoleColor.DarkYellow, false);
+                    }
+                    Console.WriteLine();
+                }
 
                 p.EXP = p.EXP + e.EXP;
                 Write("You gained " + e.EXP + " EXP points.");
@@ -280,27 +415,11 @@ namespace Dark_Chambers
                     //the player levels up
                     LevelUp();
                 }
-                Write("[EXP " + p.EXP + "/" + p.MaxEXP + "]", ConsoleColor.DarkGray);
+                Write("EXP[" + p.EXP + "/" + p.MaxEXP + "]", ConsoleColor.DarkGray);
                 Active = false;
             }
         }
         
-        static void UsePotion()
-        {
-            if(p.Bag.Potions != 0)
-            {
-                Write("You drink a potion.");
-                Write("Your health has been increased by 4 points!");
-                p.HP = p.HP + 4;
-                CheckHP();
-            }
-            else
-            {
-                Write("You don't have any potions!");
-            }
-            Console.WriteLine();
-        }
-
         static void Flee(Enemy e)
         {
             //player flees
@@ -316,7 +435,6 @@ namespace Dark_Chambers
                 Write("The " + e.Type + " attacks you for " + Damage + " damage.");
                 CheckHP();
             }
-            Console.WriteLine();
         }
 
         static void EnemyTurn(Enemy e)
@@ -329,7 +447,7 @@ namespace Dark_Chambers
 
         static void CheckHP()
         {
-            Write("[HP " + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
+            Write("HP[" + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
             if (p.HP <= 0)
             {
                 Game = false;
@@ -348,79 +466,110 @@ namespace Dark_Chambers
             Write("HP increased by 4 points.");
             p.MaxHP = p.MaxHP + 4;
             p.HP = p.HP + 4;
-            Write("[HP " + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
+            Write("HP[" + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
 
             p.EXP = p.EXP - p.MaxEXP;
             p.MaxEXP = (int)Math.Ceiling(p.MaxEXP * 1.5);
         }
 
-        static void Chest()
+        static void Chest(Chest c, bool mimic = false)
         {
             Read("You found a chest! Do you want to open it?");
             switch (Input)
             {
                 case "yes":
-                    Write("You open the chest...");
-                    Percentage = r.Next(0, 101);
-                    if(Percentage <= 60)
-                    {
-                        Percentage = r.Next(0, 101);
-                        if(Percentage <= 40)
-                        {
-                            int Coins = r.Next((int)Math.Ceiling(p.Level * 0.8), (int)Math.Ceiling(p.Level * 1.4) + 1);                            
-                            Write("There are " + Coins + " coins inside!");
-                            Write("You put the coins in your bag");
-                            p.Bag.Coins = p.Bag.Coins + Coins;
-                            Console.WriteLine("[COINS " + p.Bag.Coins + "]");
-                        }
-                        else if(Percentage > 40 && Percentage <= 80)
-                        {
-                            int Potions = r.Next(1, 4);
-                            Write("There are " + Potions + " potions inside!");
-                            Write("You put the potions in your bag");
-                            p.Bag.Potions = p.Bag.Potions + Potions;
-                            Console.WriteLine("[POTIONS " + p.Bag.Potions + "]");
-                        }
-                        else if(Percentage > 80 && Percentage <= 100)
-                        {
-                            int Keys = r.Next(1, 3);
-                            Write("There are " + Keys + " keys inside!");
-                            Write("You put the keys in your bag");
-                            p.Bag.Keys = p.Bag.Keys + Keys;
-                            Console.WriteLine("[KEYS " + p.Bag.Keys + "]");
-                        }
-                    }
-                    else if(Percentage > 60 && Percentage <= 90)
-                    {                     
-                        string[] Weapons = new string[] {"Sword", "Axe", "Dagger"};
-                        int weapon = r.Next(1, Weapons.Length) - 1;
-                        Weapon w = f.GetWeapon(Weapons[weapon], p);
-
-                        Write("There is a " + w.State.Prefix + w.Type + " inside!");
-                        Console.WriteLine();
-                        WeaponStats(w);
-                        Console.WriteLine();
-                        Read("Do you want to take it with you?");
-                        switch (Input)
-                        {
-                            case "yes":
-                                Write("You take the " + w.State.Prefix + w.Type + ".");
-                                p.Weapon = w;
-                                break;
-                            case "no":
-                                Write("You leave the " + w.State.Prefix + w.Type + ".");
-                                break;
-                        }
-                    }
-
-                    else if(Percentage > 90 && Percentage <= 100)
+                    if (mimic)
                     {
                         Battle(f.GetEnemy("Mimic", p));
                     }
+                    else
+                    {
+                        if (c.Locked)
+                        {
+                            Read("The chest is locked, do you want to use a key?");
+                            switch (Input)
+                            {
+                                case "yes":
+                                    if (p.Bag.Key.Amount != 0)
+                                    {
+                                        p.Bag.Key.Amount = p.Bag.Key.Amount - 1;
+                                        Write("You use a key.");
+                                        Write("Keys[" + p.Bag.Key.Amount + "]", ConsoleColor.DarkGray, false);
+                                        Console.WriteLine();
+                                        OpenChest(c);
+                                    }
+                                    else
+                                    {
+                                        Write("You don't have any keys!");
+                                        Write("You walk further.");
+                                    }
+                                    break;
+                                case "no":
+                                    Write("You walk further.");
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            OpenChest(c);
+                        }
+                    }
                     break;
                 case "no":
-                    Write("You continue your journey.");
+                    Write("You walk further.");
                     break;
+            }
+        }
+
+        static void OpenChest(Chest c)
+        {
+            Write("You open the chest...");
+            if (c.Loot != null)
+            {
+                if(c.Loot.Amount == 1)
+                {
+                    Write("There is a " + c.Loot.Type + " inside!");
+                    Write("You put the " + c.Loot.Type + " in your bag.");
+                }
+                else
+                {
+                    Write("There are " + c.Loot.Amount + " " + c.Loot.Type + "s inside!");
+                    Write("You put the " + c.Loot.Type + "s in your bag.");
+                }
+                
+                if(c.Loot.Type == "Potion")
+                {
+                    p.Bag.Potion.Amount = p.Bag.Potion.Amount + c.Loot.Amount;
+                    Write("Potion[" + p.Bag.Potion.Amount + "]", ConsoleColor.DarkMagenta, false);
+                }
+                else if(c.Loot.Type == "Key")
+                {
+                    p.Bag.Key.Amount = p.Bag.Key.Amount + c.Loot.Amount;
+                    Write("Key[" + p.Bag.Potion.Amount + "]", ConsoleColor.DarkGray, false);
+                }
+                else if(c.Loot.Type == "Coin")
+                {
+                    p.Bag.Coin.Amount = p.Bag.Coin.Amount + c.Loot.Amount;
+                    Write("Coin[" + p.Bag.Potion.Amount + "]", ConsoleColor.DarkYellow, false);
+                }
+            }
+            else
+            {
+                Write("There is a " + c.Weapon.Name + " inside!");
+                Console.WriteLine();
+                WeaponStats(c.Weapon);
+                Console.WriteLine();
+                Read("Do you want to take it with you?");
+                switch (Input)
+                {
+                    case "yes":
+                        Write("You take the " + c.Weapon.Name + " with you.");
+                        p.Weapon = c.Weapon;
+                        break;
+                    case "no":
+                        Write("You leave the " + c.Weapon.Name + ".");
+                        break;
+                }
             }
         }
     }

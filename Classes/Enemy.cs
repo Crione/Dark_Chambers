@@ -8,6 +8,7 @@ namespace Dark_Chambers
     {
         static int Percentage { get; set; }
         static Random r = new Random();
+        static Function f = new Function();
 
         //used variables
         public string Type { get; set; }
@@ -17,11 +18,12 @@ namespace Dark_Chambers
         public int Damage { get; set; }
         public int EXP { get; set; }
 
+        public Item Loot = null;
+
         //unused variables
         public int Defence { get; set; }
-        public int Loot { get; set; }
 
-        public Enemy(string t, double h, double d, Player p)
+        public Enemy(string t, double h, double d, int l, Player p)
         {
             Type = t;
 
@@ -40,6 +42,26 @@ namespace Dark_Chambers
             
             //EXP = multiplier * average of health and damage
             EXP = (int)Math.Ceiling(1.34 * ((MaxHP + Damage) / 2));
+
+            Percentage = r.Next(1, 101);
+            if(Percentage <= l)
+            {
+                string loot = "Potion";
+                Percentage = r.Next(1, 101);
+                if (Percentage <= 50)
+                {
+                    loot = "Coin";
+                }
+                else if (Percentage > 50 && Percentage <= 80)
+                {
+                    loot = "Potion";
+                }
+                else if (Percentage > 80 && Percentage <= 100)
+                {
+                    loot = "Key";
+                }
+                Loot = f.GetItem(loot, Level);
+            }
         }
     }
 
@@ -60,9 +82,12 @@ namespace Dark_Chambers
              */
             list = new List<Enemy>()
             {
-                new Enemy("Rat", 2.2, 1.3, p),
-                new Enemy("Spider", 1.3, 1.7, p),
-                new Enemy("Mimic", 1.6, 2.4, p)
+                new Enemy("Rat", 1.7, 0.8, 10, p),          //2.5
+                new Enemy("Spider", 0.8, 1.2, 10, p),       //2.5
+                new Enemy("Mimic", 1.1, 1.9, 100, p),       //3.0
+                new Enemy("Skeleton", 2.1, 1.4, 40, p),     //3.5
+                new Enemy("Kobold", 0.9, 2.6, 40, p),       //3.5
+                new Enemy("Orc", 1.9, 2.1, 50, p),          //4.0
             };
         }
     }
