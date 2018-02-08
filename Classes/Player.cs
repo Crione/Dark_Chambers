@@ -25,11 +25,9 @@ namespace Dark_Chambers
     {
         public Item Potion { get; set; }
         public Item Key { get; set; }
-        public Item Coin { get; set; }
 
         public Bag()
         {
-            Coin = new Item("Coin", 10);
             Potion = new Item("Potion", 2);
             Key = new Item("Key", 1);
         }

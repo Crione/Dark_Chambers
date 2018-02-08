@@ -117,8 +117,14 @@ namespace Dark_Chambers
             if (p.Bag.Potion.Amount != 0)
             {
                 Write("You drink a potion.");
-                Write("Your health has been increased by 4 points!");
-                p.HP = p.HP + 4;
+                int heal = 6;
+                p.HP = p.HP + heal;
+                if (p.HP > p.MaxHP)
+                {
+                    heal = (p.MaxHP - p.HP) - 6;
+                    p.HP = p.MaxHP;
+                }
+                Write("Your health has been increased by " + heal + " points!");
                 CheckHP();
                 p.Bag.Potion.Amount = p.Bag.Potion.Amount - 1;
             }
@@ -172,29 +178,27 @@ namespace Dark_Chambers
 
             Console.WriteLine("0--------Bag---------0");
 
-            Length = 20 - ("Coins" + b.Coin.Amount).Length;
-            Console.Write("|Coins");
-            for (int i = 0; i < Length; i++)
-            {
-                Console.Write(" ");
-            }
-            Console.WriteLine(b.Coin.Amount + "|");
-
-            Length = 20 - ("Potions" + b.Potion.Amount).Length;
+            Length = 20 - ("Potions[]" + b.Potion.Amount).Length;
             Console.Write("|Potions");
             for (int i = 0; i < Length; i++)
             {
                 Console.Write(" ");
             }
-            Console.WriteLine(b.Potion.Amount + "|");
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("[" + b.Potion.Amount + "]");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("|");
 
-            Length = 20 - ("Keys" + b.Key.Amount).Length;
+            Length = 20 - ("Keys[]" + b.Key.Amount).Length;
             Console.Write("|Keys");
             for (int i = 0; i < Length; i++)
             {
                 Console.Write(" ");
             }
-            Console.WriteLine(b.Key.Amount + "|");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("[" + b.Key.Amount + "]");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("|");
             WeaponStats(p.Weapon);
         }
 
@@ -400,11 +404,6 @@ namespace Dark_Chambers
                         p.Bag.Key.Amount = p.Bag.Key.Amount + e.Loot.Amount;
                         Write("Key[" + p.Bag.Key.Amount + "]", ConsoleColor.DarkGray, false);
                     }
-                    else if (e.Loot.Type == "Coin")
-                    {
-                        p.Bag.Coin.Amount = p.Bag.Coin.Amount + e.Loot.Amount;
-                        Write("Coin[" + p.Bag.Coin.Amount + "]", ConsoleColor.DarkYellow, false);
-                    }
                     Console.WriteLine();
                 }
 
@@ -463,9 +462,9 @@ namespace Dark_Chambers
             Write("[LVL " + p.Level + "]");
 
             Console.WriteLine();
-            Write("HP increased by 4 points.");
-            p.MaxHP = p.MaxHP + 4;
-            p.HP = p.HP + 4;
+            Write("HP increased by 6 points.");
+            p.MaxHP = p.MaxHP + 6;
+            p.HP = p.HP + 6;
             Write("HP[" + p.HP + "/" + p.MaxHP + "]", ConsoleColor.DarkRed, false);
 
             p.EXP = p.EXP - p.MaxEXP;
@@ -545,12 +544,7 @@ namespace Dark_Chambers
                 else if(c.Loot.Type == "Key")
                 {
                     p.Bag.Key.Amount = p.Bag.Key.Amount + c.Loot.Amount;
-                    Write("Key[" + p.Bag.Potion.Amount + "]", ConsoleColor.DarkGray, false);
-                }
-                else if(c.Loot.Type == "Coin")
-                {
-                    p.Bag.Coin.Amount = p.Bag.Coin.Amount + c.Loot.Amount;
-                    Write("Coin[" + p.Bag.Potion.Amount + "]", ConsoleColor.DarkYellow, false);
+                    Write("Key[" + p.Bag.Key.Amount + "]", ConsoleColor.DarkGray, false);
                 }
             }
             else

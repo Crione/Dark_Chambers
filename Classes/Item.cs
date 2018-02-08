@@ -26,14 +26,15 @@ namespace Dark_Chambers
 
         public Items(int l)
         {
-            /*      Weapon Generation:
-             *      
+            /*      Item Generation:
+             *      (t, a)
+             *      t = type
+             *      a = amount dropped
              */
             list = new List<Item>()
             {
                 new Item("Potion", r.Next(1, ((int)Math.Ceiling(l * 0.3) + 1))),
                 new Item("Key", r.Next(1, ((int)Math.Ceiling(l * 0.2) + 1))),
-                new Item("Coin", r.Next((int)Math.Ceiling(l * 0.8), (int)Math.Ceiling(l * 1.4) + 1)),
             };
         }
     }

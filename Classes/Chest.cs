@@ -26,11 +26,7 @@ namespace Dark_Chambers
             {
                 string loot = "Potion";
                 Percentage = r.Next(1, 101);
-                if(Percentage <= 50)
-                {
-                    loot = "Coin";
-                }
-                else if(Percentage > 50 && Percentage <= 80)
+                if(Percentage <= 80)
                 {
                     loot = "Potion";   
                 }

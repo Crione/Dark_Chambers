@@ -48,15 +48,11 @@ namespace Dark_Chambers
             {
                 string loot = "Potion";
                 Percentage = r.Next(1, 101);
-                if (Percentage <= 50)
-                {
-                    loot = "Coin";
-                }
-                else if (Percentage > 50 && Percentage <= 80)
+                if (Percentage <= 40)
                 {
                     loot = "Potion";
                 }
-                else if (Percentage > 80 && Percentage <= 100)
+                else if (Percentage > 40 && Percentage <= 100)
                 {
                     loot = "Key";
                 }
@@ -78,16 +74,17 @@ namespace Dark_Chambers
              *      t = type
              *      h = hp
              *      d = damage
+             *      l = (%)chance to drop loot
              *      p = player
              */
             list = new List<Enemy>()
             {
-                new Enemy("Rat", 1.7, 0.8, 10, p),          //2.5
-                new Enemy("Spider", 0.8, 1.2, 10, p),       //2.5
-                new Enemy("Mimic", 1.1, 1.9, 100, p),       //3.0
-                new Enemy("Skeleton", 2.1, 1.4, 40, p),     //3.5
-                new Enemy("Kobold", 0.9, 2.6, 40, p),       //3.5
-                new Enemy("Orc", 1.9, 2.1, 50, p),          //4.0
+                new Enemy("Rat", 1.6, 0.4, 10, p),          //2.0
+                new Enemy("Spider", 1.2, 0.8, 10, p),       //2.0
+                new Enemy("Mimic", 1.1, 1.4, 100, p),       //2.5
+                new Enemy("Skeleton", 1.9, 1.1, 40, p),     //3.0
+                new Enemy("Kobold", 1.3, 1.7, 40, p),       //3.0
+                new Enemy("Orc", 2.1, 1.9, 70, p),          //4.0
             };
         }
     }
