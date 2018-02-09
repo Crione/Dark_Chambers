@@ -93,15 +93,15 @@ namespace Dark_Chambers
                 {
                     case "stats":
                     case "s":
-                        ViewStats(p);
+                        ViewStats();
                         break;
                     case "bag":
                     case "b":
-                        ViewBag(p.Bag);
+                        ViewBag();
                         break;
                     case "potion":
                     case "p":
-                        UsePotion();
+                        UsePotion((Potion)p.Bag.Single(p => p.Type == "Potion"));
                         break;
                     default:
                         Console.WriteLine("Unknown Command.");
@@ -112,12 +112,12 @@ namespace Dark_Chambers
             }
         }
 
-        static void UsePotion()
+        static void UsePotion(Potion potion)
         {
-            if (p.Bag.Potion.Amount != 0)
+            if (potion.Amount != 0)
             {
                 Write("You drink a potion.");
-                int heal = 6;
+                int heal = potion.Heal;
                 p.HP = p.HP + heal;
                 if (p.HP > p.MaxHP)
                 {
@@ -126,7 +126,7 @@ namespace Dark_Chambers
                 }
                 Write("Your health has been increased by " + heal + " points!");
                 CheckHP();
-                p.Bag.Potion.Amount = p.Bag.Potion.Amount - 1;
+                p.Bag.Single(i => i.Type == potion.Type).Amount--;
             }
             else
             {
@@ -134,7 +134,7 @@ namespace Dark_Chambers
             }
         }
 
-        static void ViewStats(Player p)
+        static void ViewStats()
         {
             int Length;
 
@@ -172,33 +172,26 @@ namespace Dark_Chambers
             Console.WriteLine("0--------------------0");
         }
 
-        static void ViewBag(Bag b)
+        static void ViewBag()
         {
             int Length;
 
             Console.WriteLine("0--------Bag---------0");
 
-            Length = 20 - ("Potions[]" + b.Potion.Amount).Length;
-            Console.Write("|Potions");
-            for (int i = 0; i < Length; i++)
+            foreach(Item item in p.Bag)
             {
-                Console.Write(" ");
+                Length = 20 - ((item.Type + item.Amount).Length + 2);
+                Console.Write("|" + item.Type);
+                for (int i = 0; i < Length; i++)
+                {
+                    Console.Write(" ");
+                }
+                Console.ForegroundColor = item.Color;
+                Console.Write("[" + item.Amount + "]");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("|");
             }
-            Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            Console.Write("[" + b.Potion.Amount + "]");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("|");
 
-            Length = 20 - ("Keys[]" + b.Key.Amount).Length;
-            Console.Write("|Keys");
-            for (int i = 0; i < Length; i++)
-            {
-                Console.Write(" ");
-            }
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write("[" + b.Key.Amount + "]");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("|");
             WeaponStats(p.Weapon);
         }
 
@@ -329,7 +322,7 @@ namespace Dark_Chambers
                                     break;
                                 case "potion":
                                 case "p":
-                                    UsePotion();
+                                    UsePotion((Potion)p.Bag.Single(p => p.Type == "Potion"));
                                     Break = true;
                                     break;
                                 case "flee":
@@ -394,16 +387,20 @@ namespace Dark_Chambers
                         Write("You put the " + e.Loot.Type + "s in your bag.");
                     }
 
-                    if (e.Loot.Type == "Potion")
-                    {
-                        p.Bag.Potion.Amount = p.Bag.Potion.Amount + e.Loot.Amount;
-                        Write("Potion[" + p.Bag.Potion.Amount + "]", ConsoleColor.DarkMagenta, false);
+                    if(p.Bag.Any(i => i.Type == e.Loot.Type)){
+                        int index = p.Bag.FindIndex(i => i.Type == e.Loot.Type);
+                        Item item = p.Bag[index];
+
+                        item.Amount += e.Loot.Amount;
+                        Write("[" + item.Amount + "]", item.Color, false);
                     }
-                    else if (e.Loot.Type == "Key")
+                    else
                     {
-                        p.Bag.Key.Amount = p.Bag.Key.Amount + e.Loot.Amount;
-                        Write("Key[" + p.Bag.Key.Amount + "]", ConsoleColor.DarkGray, false);
+                        p.Bag.Add(e.Loot);
+                        Write("[" + e.Loot.Amount + "]", e.Loot.Color, false);
                     }
+
+
                     Console.WriteLine();
                 }
 
@@ -489,11 +486,11 @@ namespace Dark_Chambers
                             switch (Input)
                             {
                                 case "yes":
-                                    if (p.Bag.Key.Amount != 0)
+                                    if (p.Bag.Single(k => k.Type == "Key").Amount != 0)
                                     {
-                                        p.Bag.Key.Amount = p.Bag.Key.Amount - 1;
+                                        p.Bag.Single(k => k.Type == "Key").Amount--;
                                         Write("You use a key.");
-                                        Write("Keys[" + p.Bag.Key.Amount + "]", ConsoleColor.DarkGray, false);
+                                        Write("Keys[" + p.Bag.Single(k => k.Type == "Key").Amount + "]", ConsoleColor.DarkGray, false);
                                         Console.WriteLine();
                                         OpenChest(c);
                                     }
@@ -535,17 +532,21 @@ namespace Dark_Chambers
                     Write("There are " + c.Loot.Amount + " " + c.Loot.Type + "s inside!");
                     Write("You put the " + c.Loot.Type + "s in your bag.");
                 }
-                
-                if(c.Loot.Type == "Potion")
+
+                if (p.Bag.Any(i => i.Type == e.Loot.Type))
                 {
-                    p.Bag.Potion.Amount = p.Bag.Potion.Amount + c.Loot.Amount;
-                    Write("Potion[" + p.Bag.Potion.Amount + "]", ConsoleColor.DarkMagenta, false);
+                    int index = p.Bag.FindIndex(i => i.Type == e.Loot.Type);
+                    Item item = p.Bag[index];
+
+                    item.Amount += e.Loot.Amount;
+                    Write("[" + item.Amount + "]", item.Color, false);
                 }
-                else if(c.Loot.Type == "Key")
+                else
                 {
-                    p.Bag.Key.Amount = p.Bag.Key.Amount + c.Loot.Amount;
-                    Write("Key[" + p.Bag.Key.Amount + "]", ConsoleColor.DarkGray, false);
+                    p.Bag.Add(e.Loot);
+                    Write("[" + e.Loot.Amount + "]", e.Loot.Color, false);
                 }
+
             }
             else
             {

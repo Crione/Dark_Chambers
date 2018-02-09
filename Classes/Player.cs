@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Dark_Chambers
 {
     class Player
     {
+        static Items items = new Items(1);
         static Function f = new Function();
 
         //used variables
@@ -18,18 +20,10 @@ namespace Dark_Chambers
         public int EXP = 0;
 
         public Weapon Weapon = new Weapon("Fist", 1, 50, f.GetState(""), 1);
-        public Bag Bag = new Bag();
-    }
-
-    class Bag
-    {
-        public Item Potion { get; set; }
-        public Item Key { get; set; }
-
-        public Bag()
+        public List<Item> Bag = new List<Item>()
         {
-            Potion = new Item("Potion", 2);
-            Key = new Item("Key", 1);
-        }
+                items.list.Single(i => i.Type == "Key"),
+                items.list.Single(i => i.Type == "Potion"),
+        };
     }
 }
